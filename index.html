@@ -52,10 +52,9 @@
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
         .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 2px solid rgba(255, 182, 193, 0.5);
-            box-shadow: 0 20px 40px rgba(246, 0, 116, 0.15);
+            backdrop-filter: blur(16px);
+            border: 2px solid rgba(255, 182, 193, 0.6);
+            box-shadow: 0 20px 40px rgba(246, 0, 116, 0.2);
         }
         .glow-pink {
             box-shadow: 0 0 25px rgba(255, 33, 146, 0.6);
@@ -108,7 +107,7 @@
         </header>
 
         <!-- ЭКРАН 1: ПРАВИЛА -->
-        <main id="screen-welcome" class="w-full max-w-4xl glass-card rounded-3xl p-6 md:p-12 my-auto z-10 text-center shadow-2xl transition-all block">
+        <main id="screen-welcome" class="w-full max-w-4xl glass-card bg-white/85 rounded-3xl p-6 md:p-12 my-auto z-10 text-center shadow-2xl transition-all block">
             <div class="inline-block bg-barbie-100 text-barbie-600 px-6 py-2 rounded-full font-bold text-sm md:text-base mb-6 border border-barbie-300 uppercase tracking-widest shadow-sm">
                 💖 Девичник / Вечеринка мечты 💖
             </div>
@@ -158,13 +157,13 @@
             </button>
         </main>
 
-        <!-- ЭКРАН 2: ИГРА -->
-        <main id="screen-playing" class="w-full max-w-3xl glass-card rounded-3xl p-6 md:p-10 my-auto z-10 text-center shadow-2xl transition-all hidden">
-            <div class="flex items-center justify-between mb-8 pb-4 border-b border-barbie-200">
+        <!-- ЭКРАН 2: ИГРА (С ДИНАМИЧЕСКИМ ГРАДИЕНТОМ КАРТОЧКИ) -->
+        <main id="screen-playing" class="w-full max-w-3xl glass-card rounded-3xl p-6 md:p-10 my-auto z-10 text-center shadow-2xl transition-all duration-700 hidden">
+            <div class="flex items-center justify-between mb-8 pb-4 border-b border-barbie-300/40">
                 <span id="track-number" class="bg-barbie-500 text-white font-bold px-5 py-2 rounded-full text-base md:text-lg shadow-sm">
                     Песня № 1
                 </span>
-                <span id="tracks-left" class="text-slate-500 font-semibold text-sm md:text-base">
+                <span id="tracks-left" class="text-slate-600 font-semibold text-sm md:text-base">
                     Осталось: 37
                 </span>
             </div>
@@ -187,14 +186,14 @@
                             <i class="fa-solid fa-volume-high"></i>
                             <span>Воспроизводится музыкальный фрагмент...</span>
                         </span>
-                        <span id="status-paused" class="text-slate-500 block">
+                        <span id="status-paused" class="text-slate-600 block">
                             Нажмите «Воспроизвести» для прослушивания
                         </span>
                     </p>
                 </div>
 
                 <!-- Карточка ответа -->
-                <div id="answer-container" class="w-full bg-gradient-to-br from-white via-barbie-50 to-barbie-100 p-8 rounded-3xl border-2 border-barbie-300 shadow-xl glow-gold transform hover:scale-[1.02] transition duration-300 hidden">
+                <div id="answer-container" class="w-full bg-gradient-to-br from-white/90 via-barbie-50/90 to-barbie-100/90 p-8 rounded-3xl border-2 border-barbie-300 shadow-xl glow-gold transform hover:scale-[1.02] transition duration-300 hidden">
                     <div class="inline-block bg-gold text-slate-900 font-extrabold px-4 py-1 rounded-full text-xs uppercase tracking-widest mb-4 shadow">
                         ✨ Ответ ✨
                     </div>
@@ -208,7 +207,7 @@
             </div>
 
             <!-- Кнопки управления -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-8 pt-6 border-t border-barbie-200">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-8 pt-6 border-t border-barbie-300/40">
                 <button id="btn-play-pause" class="bg-barbie-500 hover:bg-barbie-600 text-white shadow-md glow-pink p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-barbie-500 disabled:shadow-none">
                     <i id="icon-play-pause" class="fa-solid fa-play text-xl"></i>
                     <span id="text-play-pause">Воспроизвести</span>
@@ -227,7 +226,7 @@
         </main>
 
         <!-- ЭКРАН 3: ФИНАЛ -->
-        <main id="screen-finished" class="w-full max-w-2xl glass-card rounded-3xl p-8 md:p-12 my-auto z-10 text-center shadow-2xl hidden">
+        <main id="screen-finished" class="w-full max-w-2xl glass-card bg-white/85 rounded-3xl p-8 md:p-12 my-auto z-10 text-center shadow-2xl hidden">
             <div class="text-6xl mb-6 text-gold animate-bounce">
                 <i class="fa-solid fa-trophy"></i>
             </div>
@@ -320,7 +319,8 @@
             { id: 38, artist: "Tame Impala", title: "Dracula", videoId: "xnP7qKxwzjg", start: 145, end: 165 }
         ];
 
-        const GRADIENTS = [
+        // Градиенты для внешнего фона приложения
+        const BG_GRADIENTS = [
             "bg-gradient-to-br from-barbie-100 via-barbie-200 to-purple-300",
             "bg-gradient-to-tr from-purple-200 via-barbie-200 to-pink-300",
             "bg-gradient-to-r from-fuchsia-100 via-pink-200 to-barbie-200",
@@ -328,11 +328,21 @@
             "bg-gradient-to-l from-pink-200 via-fuchsia-200 to-purple-200"
         ];
 
+        // Градиенты для игровой карточки
+        const CARD_GRADIENTS = [
+            "bg-gradient-to-br from-white/95 via-barbie-50/90 to-purple-100/90",
+            "bg-gradient-to-tr from-white/95 via-pink-50/90 to-barbie-100/90",
+            "bg-gradient-to-r from-white/95 via-fuchsia-50/90 to-pink-100/90",
+            "bg-gradient-to-bl from-white/95 via-barbie-100/90 to-amber-50/80",
+            "bg-gradient-to-tl from-white/95 via-purple-50/90 to-barbie-100/90",
+            "bg-gradient-to-b from-white/95 via-pink-100/90 to-fuchsia-50/90"
+        ];
+
         let shuffledQueue = [];
         let currentIndex = 0;
         let isPlaying = false;
+        let isLoading = false;
         let isRevealed = false;
-        let hasPlayedAtLeastOnce = false;
         let historyArray = [];
         let player = null;
         let checkTimeInterval = null;
@@ -381,8 +391,10 @@
 
         function onPlayerStateChange(event) {
             if (event.data === YT.PlayerState.PLAYING) {
+                setLoadingState(false);
                 setPlayingState(true);
             } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                setLoadingState(false);
                 setPlayingState(false);
             }
         }
@@ -403,10 +415,21 @@
             screen.classList.remove('hidden');
         }
 
+        function setLoadingState(loading) {
+            isLoading = loading;
+            if (isLoading) {
+                btnPlayPause.disabled = true;
+                iconPlayPause.className = 'fa-solid fa-spinner fa-spin text-xl';
+                textPlayPause.innerText = 'Загрузка...';
+            } else {
+                iconPlayPause.className = 'fa-solid fa-play text-xl';
+                textPlayPause.innerText = 'Воспроизвести';
+            }
+        }
+
         function setPlayingState(playing) {
             isPlaying = playing;
             if (isPlaying) {
-                hasPlayedAtLeastOnce = true;
                 btnPlayPause.disabled = true;
                 textPlayPause.innerText = 'Воспроизводится...';
                 
@@ -416,13 +439,9 @@
 
                 startTrackingTime();
             } else {
-                btnPlayPause.disabled = false;
-                textPlayPause.innerText = 'Воспроизвести';
-                
-                // Разблокируем Показать ответ и Далее только если трек был запущен хотя бы 1 раз
-                if (hasPlayedAtLeastOnce) {
-                    if (!isRevealed) btnReveal.disabled = false;
-                    btnNext.disabled = false;
+                if (!isLoading) {
+                    btnPlayPause.disabled = false;
+                    textPlayPause.innerText = 'Воспроизвести';
                 }
 
                 vinylDisc.classList.remove('animate-spin-slow', 'glow-pink');
@@ -448,6 +467,14 @@
 
         function playCurrentSnippet() {
             if (!player) return;
+            
+            // Ставим лоудинг перед стартом запроса
+            setLoadingState(true);
+
+            // Сразу разблокируем «Показать ответ» и «Далее» после нажимания на Воспроизвести!
+            if (!isRevealed) btnReveal.disabled = false;
+            btnNext.disabled = false;
+
             const currentTrack = shuffledQueue[currentIndex];
             player.loadVideoById({
                 videoId: currentTrack.videoId,
@@ -457,9 +484,14 @@
             player.playVideo();
         }
 
-        function changeBackgroundGradient() {
-            const gradientIndex = currentIndex % GRADIENTS.length;
-            bgBody.className = `${GRADIENTS[gradientIndex]} min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white transition-all duration-700`;
+        function updateGradients() {
+            // Меняем фон страницы
+            const bgIndex = currentIndex % BG_GRADIENTS.length;
+            bgBody.className = `${BG_GRADIENTS[bgIndex]} min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white transition-all duration-700`;
+
+            // Меняем градиент главной карточки
+            const cardIndex = currentIndex % CARD_GRADIENTS.length;
+            screenPlaying.className = `w-full max-w-3xl glass-card ${CARD_GRADIENTS[cardIndex]} rounded-3xl p-6 md:p-10 my-auto z-10 text-center shadow-2xl transition-all duration-700 block`;
         }
 
         document.getElementById('btn-start').addEventListener('click', () => {
@@ -480,7 +512,7 @@
         });
 
         btnPlayPause.addEventListener('click', () => {
-            if (!isPlaying) {
+            if (!isPlaying && !isLoading) {
                 playCurrentSnippet();
             }
         });
@@ -502,11 +534,6 @@
         });
 
         btnNext.addEventListener('click', () => {
-            btnNext.disabled = true;
-            setTimeout(() => {
-                if (hasPlayedAtLeastOnce) btnNext.disabled = false;
-            }, 1000);
-
             if (isPlaying && player) {
                 player.pauseVideo();
             }
@@ -538,13 +565,14 @@
 
         function updateTrackUI() {
             isRevealed = false;
-            hasPlayedAtLeastOnce = false;
+            setLoadingState(false);
             setPlayingState(false);
-            changeBackgroundGradient();
+            updateGradients();
             
-            // Изначально задизейблены все кнопки, кроме "Воспроизвести"
+            // По дефолту на новом треке задизейблены «Показать ответ» и «Далее»
             btnReveal.disabled = true;
             btnNext.disabled = true;
+            btnPlayPause.disabled = false;
 
             document.getElementById('track-number').innerText = `Песня № ${currentIndex + 1}`;
             document.getElementById('tracks-left').innerText = `Осталось: ${shuffledQueue.length - currentIndex - 1}`;
