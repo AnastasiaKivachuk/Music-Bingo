@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Barbie Bachelorette - Music Bingo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@400;600;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #fce4ec;
+            font-family: 'Montserrat', sans-serif;
+            color: #4a0033;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .no-print-btn {
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .no-print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 20, 147, 0.6);
+        }
+
+        .card {
+            width: 210mm;
+            height: 297mm; /* A4 size per card */
+            background: linear-gradient(135deg, #fff0f6 0%, #ffe3ec 100%);
+            border: 8px solid #ff1493;
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.2);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always;
+            overflow: hidden;
+        }
+
+        /* Inner dashed border */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px dashed #ff69b4;
+            border-radius: 16px;
+            pointer-events: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle-top {
+            font-family: 'Pacifico', cursive;
+            color: #ff1493;
+            font-size: 24px;
+        }
+
+        .main-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 60px;
+            color: #d81b60;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 10px rgba(216, 27, 96, 0.3);
+            line-height: 1.1;
+        }
+
+        .date-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, #ff1493, #ff69b4);
+            color: white;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 4px 18px;
+            border-radius: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 5px;
+            box-shadow: 0 3px 8px rgba(255, 20, 147, 0.3);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            gap: 12px;
+            flex-grow: 1;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        .cell {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #ff8da1;
+            border-radius: 14px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+
+        .cell-number {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            color: #ff69b4;
+            opacity: 0.7;
+        }
+
+        .artist {
+            font-size: 11px;
+            font-weight: 800;
+            color: #c2185b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .song {
+            font-size: 13px;
+            font-weight: 600;
+            color: #880e4f;
+            line-height: 1.2;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ff1493;
+        }
+
+        .card-id {
+            background: #fff;
+            border: 1px solid #ff69b4;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .no-print-btn {
+                display: none;
+            }
+            .card {
+                box-shadow: none;
+                page-break-after: always;
+                width: 100vw;
+                height: 100vh;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="no-print-btn" onclick="window.print()">🖨️ Распечатать карточки (или Сохранить в PDF)</button>
+
+    <!-- CARD 1 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">ANNA ASTI</div><div class="song">«Царица»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Люся Чеботина</div><div class="song">«Солнце Монако»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">Britney Spears</div><div class="song">«Toxic»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">Rihanna</div><div class="song">«Umbrella»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Глюк’oZa</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">Дима Билан</div><div class="song">«Я твой номер один»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Sabrina Carpenter</div><div class="song">«Espresso»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Lady Gaga</div><div class="song">«Bad Romance»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">Валерий Меладзе</div><div class="song">«Красиво»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Егор Крид</div><div class="song">«Самая самая»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Miley Cyrus</div><div class="song">«Flowers»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Баста</div><div class="song">«Сансара»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">Dua Lipa</div><div class="song">«Levitating»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">Макс Корж</div><div class="song">«Малый повзрослел»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Верка Сердючка</div><div class="song">«Гулянка»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #1</span>
+        </div>
+    </div>
+
+    <!-- CARD 2 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">Billie Eilish</div><div class="song">«Bad guy»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Aqua</div><div class="song">«Barbie Girl»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">МакSим</div><div class="song">«Знаешь ли ты»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">ВИА Гра</div><div class="song">«Попытка №5»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Shakira</div><div class="song">«Whenever, Wherever»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">Beyoncé</div><div class="song">«Single Ladies»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Монеточка</div><div class="song">«Монополия»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Мумий Тролль</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">Harry Styles</div><div class="song">«As It Was»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Justin Timberlake</div><div class="song">«Cry Me a River»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Taylor Swift</div><div class="song">«The Fate of Ophelia»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Жанна Фриске</div><div class="song">«Портофино»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">Ляпис Трубецкой</div><div class="song">«В платье белом»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">PinkPantheress</div><div class="song">«Illegal»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">ABBA</div><div class="song">«Dancing Queen»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #2</span>
+        </div>
+    </div>
+
+    <!-- CARD 3 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">Serebro</div><div class="song">«Мало тебя»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Катя Лель</div><div class="song">«Муси-пуси»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">Justin Bieber</div><div class="song">«Baby»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">The Weeknd</div><div class="song">«Blinding Lights»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Элджей & Feduk</div><div class="song">«Розовое вино»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">Ирина Аллегрова</div><div class="song">«Угонщица»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">ROSÉ & Bruno Mars</div><div class="song">«APT.»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Tame Impala</div><div class="song">«Dracula»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">ANNA ASTI</div><div class="song">«Царица»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Britney Spears</div><div class="song">«Toxic»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Sabrina Carpenter</div><div class="song">«Espresso»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Валерий Меладзе</div><div class="song">«Красиво»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">Miley Cyrus</div><div class="song">«Flowers»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">Dua Lipa</div><div class="song">«Levitating»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Aqua</div><div class="song">«Barbie Girl»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #3</span>
+        </div>
+    </div>
+
+    <!-- CARD 4 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">МакSим</div><div class="song">«Знаешь ли ты»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Shakira</div><div class="song">«Whenever, Wherever»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">Beyoncé</div><div class="song">«Single Ladies»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">Harry Styles</div><div class="song">«As It Was»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Taylor Swift</div><div class="song">«The Fate of Ophelia»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">ABBA</div><div class="song">«Dancing Queen»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Justin Bieber</div><div class="song">«Baby»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Элджей & Feduk</div><div class="song">«Розовое вино»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">ROSÉ & Bruno Mars</div><div class="song">«APT.»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Люся Чеботина</div><div class="song">«Солнце Монако»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Rihanna</div><div class="song">«Umbrella»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Глюк’oZa</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">Дима Билан</div><div class="song">«Я твой номер один»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">Lady Gaga</div><div class="song">«Bad Romance»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Егор Крид</div><div class="song">«Самая самая»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #4</span>
+        </div>
+    </div>
+
+    <!-- CARD 5 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">Баста</div><div class="song">«Сансара»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Макс Корж</div><div class="song">«Малый повзрослел»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">Верка Сердючка</div><div class="song">«Гулянка»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">Billie Eilish</div><div class="song">«Bad guy»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">ВИА Гра</div><div class="song">«Попытка №5»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">Монеточка</div><div class="song">«Монополия»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Мумий Троль</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Justin Timberlake</div><div class="song">«Cry Me a River»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">Жанна Фриске</div><div class="song">«Портофино»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Ляпис Трубецкой</div><div class="song">«В платье белом»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">PinkPantheress</div><div class="song">«Illegal»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Serebro</div><div class="song">«Мало тебя»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">Катя Лель</div><div class="song">«Муси-пуси»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">The Weeknd</div><div class="song">«Blinding Lights»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Ирина Аллегрова</div><div class="song">«Угонщица»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #5</span>
+        </div>
+    </div>
+
+    <!-- CARD 6 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">Tame Impala</div><div class="song">«Dracula»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">ANNA ASTI</div><div class="song">«Царица»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">Люся Чеботина</div><div class="song">«Солнце Монако»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">Britney Spears</div><div class="song">«Toxic»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Rihanna</div><div class="song">«Umbrella»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">Sabrina Carpenter</div><div class="song">«Espresso»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Lady Gaga</div><div class="song">«Bad Romance»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Валерий Меладзе</div><div class="song">«Красиво»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">Miley Cyrus</div><div class="song">«Flowers»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Dua Lipa</div><div class="song">«Levitating»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Billie Eilish</div><div class="song">«Bad guy»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Aqua</div><div class="song">«Barbie Girl»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">МакSим</div><div class="song">«Знаешь ли ты»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">Shakira</div><div class="song">«Whenever, Wherever»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Beyoncé</div><div class="song">«Single Ladies»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #6</span>
+        </div>
+    </div>
+
+    <!-- CARD 7 -->
+    <div class="card">
+        <div class="header">
+            <div class="subtitle-top">Music Bingo</div>
+            <div class="main-title">Barbie Bachelorette</div>
+            <div class="date-badge">August 29–30</div>
+        </div>
+        <div class="grid">
+            <div class="cell"><span class="cell-number">#1</span><div class="artist">Harry Styles</div><div class="song">«As It Was»</div></div>
+            <div class="cell"><span class="cell-number">#2</span><div class="artist">Taylor Swift</div><div class="song">«The Fate of Ophelia»</div></div>
+            <div class="cell"><span class="cell-number">#3</span><div class="artist">ABBA</div><div class="song">«Dancing Queen»</div></div>
+            <div class="cell"><span class="cell-number">#4</span><div class="artist">Serebro</div><div class="song">«Мало тебя»</div></div>
+            <div class="cell"><span class="cell-number">#5</span><div class="artist">Justin Bieber</div><div class="song">«Baby»</div></div>
+            <div class="cell"><span class="cell-number">#6</span><div class="artist">The Weeknd</div><div class="song">«Blinding Lights»</div></div>
+            <div class="cell"><span class="cell-number">#7</span><div class="artist">Элджей & Feduk</div><div class="song">«Розовое вино»</div></div>
+            <div class="cell"><span class="cell-number">#8</span><div class="artist">Ирина Аллегрова</div><div class="song">«Угонщица»</div></div>
+            <div class="cell"><span class="cell-number">#9</span><div class="artist">ROSÉ & Bruno Mars</div><div class="song">«APT.»</div></div>
+            <div class="cell"><span class="cell-number">#10</span><div class="artist">Глюк’oZa</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#11</span><div class="artist">Егор Крид</div><div class="song">«Самая самая»</div></div>
+            <div class="cell"><span class="cell-number">#12</span><div class="artist">Верка Сердючка</div><div class="song">«Гулянка»</div></div>
+            <div class="cell"><span class="cell-number">#13</span><div class="artist">ВИА Гра</div><div class="song">«Попытка №5»</div></div>
+            <div class="cell"><span class="cell-number">#14</span><div class="artist">Мумий Тролль</div><div class="song">«Невеста»</div></div>
+            <div class="cell"><span class="cell-number">#15</span><div class="artist">Ляпис Трубецкой</div><div class="song">«В платье белом»</div></div>
+        </div>
+        <div class="footer">
+            <span>✨ Party Rules: Full House!</span>
+            <span class="card-id">Card #7</span>
+        </div>
+    </div>
+
+</body>
+</html>

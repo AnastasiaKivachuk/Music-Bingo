@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Музыкальное Лото — Barbie Edition 💖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        barbie: {
+                            50: '#fff0f6',
+                            100: '#ffe3f1',
+                            200: '#ffc6e5',
+                            300: '#ff98d0',
+                            400: '#ff58b1',
+                            500: '#ff2192',
+                            600: '#f60074',
+                            700: '#d5005c',
+                            800: '#af044c',
+                            900: '#910842',
+                        },
+                        gold: '#ffd700',
+                    },
+                    fontFamily: {
+                        sans: ['Montserrat', 'sans-serif'],
+                        cursive: ['Pacifico', 'cursive'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=Pacifico&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <style>
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 4s linear infinite;
+        }
+        .animate-pulse-slow {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 182, 193, 0.5);
+            box-shadow: 0 20px 40px rgba(246, 0, 116, 0.15);
+        }
+        .glow-pink {
+            box-shadow: 0 0 25px rgba(255, 33, 146, 0.6);
+        }
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #ffe3f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff58b1;
+            border-radius: 4px;
+        }
+        /* Утилиты для скрытия элементов */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-barbie-100 via-barbie-200 to-barbie-300 min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white">
+
+<!-- YouTube Плеер (скрыт) -->
+<div id="youtube-player-container" class="fixed -top-[9999px] -left-[9999px] pointer-events-none opacity-0">
+    <div id="youtube-player"></div>
+</div>
+
+<!-- Основной контейнер приложения -->
+<div class="relative min-h-screen flex flex-col items-center justify-between p-4 md:p-8 overflow-hidden">
+
+    <!-- Фоновые декорации -->
+    <div class="absolute -top-20 -left-20 w-80 h-80 bg-barbie-300 rounded-full blur-3xl opacity-50 pointer-events-none animate-pulse-slow"></div>
+    <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-barbie-400 rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse-slow"></div>
+
+    <!-- Шапка -->
+    <header class="w-full max-w-5xl flex items-center justify-between z-10 py-2 border-b-2 border-barbie-300/40">
+        <div class="flex items-center space-x-3">
+            <i class="fa-solid fa-crown text-3xl text-gold drop-shadow"></i>
+            <h1 class="font-cursive text-2xl md:text-4xl text-barbie-600 font-bold tracking-wide">
+                Music Bingo <span class="text-slate-800 text-lg md:text-2xl font-sans uppercase tracking-widest">| Barbie Edition</span>
+            </h1>
+        </div>
+
+        <!-- Кнопка "Сыгранные песни" (скрыта на главном экране) -->
+        <button id="btn-open-history" class="hidden items-center space-x-2 bg-white/90 hover:bg-white text-barbie-600 font-bold px-4 py-2 rounded-full shadow-md border-2 border-barbie-300 transition duration-300 hover:scale-105">
+            <i class="fa-solid fa-list-check text-xl"></i>
+            <span class="hidden sm:inline">Сыгранные песни</span>
+            <span id="history-count" class="bg-barbie-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">0</span>
+        </button>
+    </header>
+
+    <!-- ЭКРАН 1: ПРАВИЛА (Приветствие) -->
+    <main id="screen-welcome" class="w-full max-w-4xl glass-card rounded-3xl p-6 md:p-12 my-auto z-10 text-center shadow-2xl transition-all block">
+        <div class="inline-block bg-barbie-100 text-barbie-600 px-6 py-2 rounded-full font-bold text-sm md:text-base mb-6 border border-barbie-300 uppercase tracking-widest shadow-sm">
+            💖 Девичник / Вечеринка мечты 💖
+        </div>
+
+        <h2 class="text-3xl md:text-5xl font-extrabold text-slate-800 mb-8 leading-tight">
+            Правила игры <br/>
+            <span class="font-cursive text-barbie-500 font-normal text-4xl md:text-6xl">Музыкальное Бинго</span>
+        </h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 text-left">
+            <div class="bg-white/80 p-5 rounded-2xl border border-barbie-200 shadow-sm flex flex-col items-center text-center hover:scale-105 transition">
+                <div class="w-14 h-14 bg-barbie-100 text-barbie-600 rounded-full flex items-center justify-center text-2xl mb-4 border border-barbie-300 shadow-inner">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-2">1. Возьмите бланки</h3>
+                <p class="text-sm text-slate-600">Раздайте всем участницам карточки с названиями песен.</p>
+            </div>
+
+            <div class="bg-white/80 p-5 rounded-2xl border border-barbie-200 shadow-sm flex flex-col items-center text-center hover:scale-105 transition">
+                <div class="w-14 h-14 bg-barbie-100 text-barbie-600 rounded-full flex items-center justify-center text-2xl mb-4 border border-barbie-300 shadow-inner">
+                    <i class="fa-solid fa-music"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-2">2. Слушайте трек</h3>
+                <p class="text-sm text-slate-600">Включается случайный отрывок известного хита.</p>
+            </div>
+
+            <div class="bg-white/80 p-5 rounded-2xl border border-barbie-200 shadow-sm flex flex-col items-center text-center hover:scale-105 transition">
+                <div class="w-14 h-14 bg-barbie-100 text-barbie-600 rounded-full flex items-center justify-center text-2xl mb-4 border border-barbie-300 shadow-inner">
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-2">3. Угадывайте</h3>
+                <p class="text-sm text-slate-600">Найдите исполнителя в своей карточке и зачеркните.</p>
+            </div>
+
+            <div class="bg-white/80 p-5 rounded-2xl border border-barbie-200 shadow-sm flex flex-col items-center text-center hover:scale-105 transition">
+                <div class="w-14 h-14 bg-barbie-100 text-barbie-600 rounded-full flex items-center justify-center text-2xl mb-4 border border-barbie-300 shadow-inner">
+                    <i class="fa-solid fa-champagne-glasses"></i>
+                </div>
+                <h3 class="font-bold text-slate-800 mb-2">4. Кричите БИНГО!</h3>
+                <p class="text-sm text-slate-600">Соберите линию или всю карточку и заберите приз!</p>
+            </div>
+        </div>
+
+        <button id="btn-start" class="bg-gradient-to-r from-barbie-500 to-barbie-600 hover:from-barbie-600 hover:to-barbie-700 text-white font-extrabold text-xl md:text-2xl px-12 py-5 rounded-full shadow-lg glow-pink transform hover:-translate-y-1 transition duration-300 flex items-center justify-center space-x-3 mx-auto">
+            <span>НАЧАТЬ ИГРУ</span>
+            <i class="fa-solid fa-play text-xl"></i>
+        </button>
+    </main>
+
+    <!-- ЭКРАН 2: ИГРА -->
+    <main id="screen-playing" class="w-full max-w-3xl glass-card rounded-3xl p-6 md:p-10 my-auto z-10 text-center shadow-2xl transition-all hidden">
+        <div class="flex items-center justify-between mb-8 pb-4 border-b border-barbie-200">
+                <span id="track-number" class="bg-barbie-500 text-white font-bold px-5 py-2 rounded-full text-base md:text-lg shadow-sm">
+                    Песня № 1
+                </span>
+            <span id="tracks-left" class="text-slate-500 font-semibold text-sm md:text-base">
+                    Осталось: 37
+                </span>
+        </div>
+
+        <div class="my-8 flex flex-col items-center justify-center min-h-[280px]">
+
+            <!-- Анимация пластинки (до ответа) -->
+            <div id="vinyl-container" class="flex flex-col items-center block">
+                <div id="vinyl-disc" class="relative w-56 h-56 md:w-64 md:h-64 rounded-full bg-slate-950 border-8 border-barbie-300 shadow-2xl flex items-center justify-center">
+                    <div class="absolute inset-4 rounded-full border border-slate-800 opacity-60"></div>
+                    <div class="absolute inset-8 rounded-full border border-slate-800 opacity-60"></div>
+                    <div class="absolute inset-12 rounded-full border border-slate-800 opacity-60"></div>
+                    <div class="w-20 h-20 bg-barbie-500 rounded-full border-4 border-white flex items-center justify-center text-white text-2xl shadow-inner">
+                        <i class="fa-solid fa-compact-disc"></i>
+                    </div>
+                </div>
+
+                <p class="mt-6 text-slate-700 font-bold text-lg flex items-center space-x-2">
+                        <span id="status-playing" class="text-barbie-600 flex items-center space-x-2 animate-pulse hidden">
+                            <i class="fa-solid fa-volume-high"></i>
+                            <span>Воспроизводится музыкальный фрагмент...</span>
+                        </span>
+                    <span id="status-paused" class="text-slate-500 block">
+                            Нажмите «Воспроизвести» для прослушивания
+                        </span>
+                </p>
+            </div>
+
+            <!-- Карточка ответа (показывается по кнопке) -->
+            <div id="answer-container" class="w-full bg-gradient-to-br from-white via-barbie-50 to-barbie-100 p-8 rounded-3xl border-2 border-barbie-300 shadow-xl glow-gold transform hover:scale-[1.02] transition duration-300 hidden">
+                <div class="inline-block bg-gold text-slate-900 font-extrabold px-4 py-1 rounded-full text-xs uppercase tracking-widest mb-4 shadow">
+                    ✨ Ответ ✨
+                </div>
+                <h3 id="answer-artist" class="text-3xl md:text-5xl font-black text-barbie-600 mb-3 tracking-wide">
+                    Артист
+                </h3>
+                <p id="answer-title" class="text-xl md:text-3xl font-extrabold text-slate-800 font-cursive">
+                    «Название»
+                </p>
+            </div>
+        </div>
+
+        <!-- Кнопки управления -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mt-8 pt-6 border-t border-barbie-200">
+            <button id="btn-play-pause" class="bg-barbie-500 hover:bg-barbie-600 text-white shadow-md glow-pink p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition">
+                <i id="icon-play-pause" class="fa-solid fa-play text-xl"></i>
+                <span id="text-play-pause">Воспроизвести</span>
+            </button>
+
+            <button id="btn-repeat" class="bg-white hover:bg-barbie-50 text-barbie-600 border-2 border-barbie-300 p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 shadow-sm transition">
+                <i class="fa-solid fa-rotate-right text-xl"></i>
+                <span>Повторить</span>
+            </button>
+
+            <button id="btn-reveal" class="bg-gold hover:bg-yellow-400 text-slate-900 shadow-md glow-gold p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition">
+                <i class="fa-solid fa-eye text-xl"></i>
+                <span>Показать ответ</span>
+            </button>
+
+            <button id="btn-next" class="bg-slate-800 hover:bg-slate-900 text-white p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 shadow-md transition">
+                <i class="fa-solid fa-forward-step text-xl"></i>
+                <span>Следующий</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- ЭКРАН 3: ФИНАЛ -->
+    <main id="screen-finished" class="w-full max-w-2xl glass-card rounded-3xl p-8 md:p-12 my-auto z-10 text-center shadow-2xl hidden">
+        <div class="text-6xl mb-6 text-gold animate-bounce">
+            <i class="fa-solid fa-trophy"></i>
+        </div>
+        <h2 class="text-4xl font-extrabold text-slate-800 mb-4">
+            Игра завершена! 🎉
+        </h2>
+        <p class="text-lg text-slate-600 mb-8">
+            Все 38 музыкальных фрагментов успешно сыграны! Поздравляем победителей музыкального бинго!
+        </p>
+        <button id="btn-restart" class="bg-gradient-to-r from-barbie-500 to-barbie-600 hover:from-barbie-600 hover:to-barbie-700 text-white font-extrabold text-xl px-10 py-4 rounded-full shadow-lg glow-pink transition duration-300">
+            Играть снова 💖
+        </button>
+    </main>
+
+    <!-- БОКОВАЯ ПАНЕЛЬ ИСТОРИИ -->
+    <div id="drawer-history" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-end transition-opacity hidden">
+        <div class="w-full max-w-md bg-white h-full shadow-2xl p-6 flex flex-col justify-between overflow-hidden animate-slide-left">
+            <div>
+                <div class="flex items-center justify-between pb-4 border-b border-barbie-200 mb-6">
+                    <h3 class="text-xl font-bold text-slate-800 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check text-barbie-500"></i>
+                        <span>Сыгранные треки</span>
+                    </h3>
+                    <button id="btn-close-history" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center text-lg transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div id="history-empty" class="text-center text-slate-400 py-12 block">
+                    Сыгранных песен пока нет.
+                </div>
+
+                <div id="history-list" class="space-y-3 max-h-[calc(100vh-180px)] overflow-y-auto pr-2 hidden">
+                    <!-- Сюда добавляются песни из истории через JS -->
+                </div>
+            </div>
+
+            <button id="btn-close-history-bottom" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl mt-4 transition">
+                Закрыть
+            </button>
+        </div>
+    </div>
+
+    <footer class="w-full text-center text-xs text-slate-600 font-medium py-4 z-10">
+        Barbie Music Bingo • Готовый инструмент для идеального девичника ✨
+    </footer>
+</div>
+
+<!-- Vanilla JavaScript Логика -->
+<script>
+    const TRACKS_DATA = [
+        { id: 1, artist: "ANNA ASTI", title: "Царица", videoId: "d8-3ffuTTZ8", start: 46, end: 63 },
+        { id: 2, artist: "Люся Чеботина", title: "Солнце Монако", videoId: "sfd2xj9xtN0", start: 63, end: 78 },
+        { id: 3, artist: "Britney Spears", title: "Toxic", videoId: "LOZuxwVk7TU", start: 56, end: 71 },
+        { id: 4, artist: "Rihanna", title: "Umbrella", videoId: "CvBfHwUxHIk", start: 55, end: 82 },
+        { id: 5, artist: "Глюк’oZa", title: "Невеста", videoId: "9P_wHDW2VJY", start: 218, end: 231 },
+        { id: 6, artist: "Дима Билан", title: "Я твой номер один", videoId: "0PXs3dVmD0A", start: 140, end: 162 },
+        { id: 7, artist: "Sabrina Carpenter", title: "Espresso", videoId: "eVli-tstM5E", start: 23, end: 41 },
+        { id: 8, artist: "Lady Gaga", title: "Bad Romance", videoId: "qrO4YZeyl0I", start: 86, end: 109 },
+        { id: 9, artist: "Валерий Меладзе", title: "Красиво", videoId: "_ECfXG6QfAA", start: 200, end: 230 },
+        { id: 10, artist: "Егор Крид", title: "Самая самая", videoId: "bFHak21e230", start: 64, end: 79 },
+        { id: 11, artist: "Miley Cyrus", title: "Flowers", videoId: "G7KNmW9a75Y", start: 33, end: 49 },
+        { id: 12, artist: "Баста", title: "Сансара", videoId: "19KffUafXhA", start: 186, end: 210 },
+        { id: 13, artist: "Dua Lipa", title: "Levitating", videoId: "TUVcZfQe-Kw", start: 32, end: 52 },
+        { id: 14, artist: "Макс Корж", title: "Малый повзрослел", videoId: "napUAIh4UE0", start: 147, end: 161 },
+        { id: 15, artist: "Верка Сердючка", title: "Гулянка", videoId: "nEynSehso50", start: 149, end: 164 },
+        { id: 16, artist: "Billie Eilish", title: "Bad guy", videoId: "DyDfgMOUjCI", start: 116, end: 135 },
+        { id: 17, artist: "Aqua", title: "Barbie Girl", videoId: "ZyhrYis509A", start: 145, end: 160 },
+        { id: 18, artist: "МакSим", title: "Знаешь ли ты", videoId: "Q8WJz-DmPVg", start: 148, end: 178 },
+        { id: 19, artist: "ВИА Гра", title: "Попытка №5", videoId: "eNWfAvwxiCE", start: 36, end: 61 },
+        { id: 20, artist: "Shakira", title: "Whenever, Wherever", videoId: "weRHyjj34ZE", start: 43, end: 61 },
+        { id: 21, artist: "Beyoncé", title: "Single Ladies", videoId: "4m1EFMoRFvY", start: 0, end: 12 },
+        { id: 22, artist: "Монеточка", title: "Монополия", videoId: "vwsSW-xXikw", start: 8, end: 25 },
+        { id: 23, artist: "Мумий Тролль", title: "Невеста", videoId: "O6pd9JF3VRA", start: 48, end: 69 },
+        { id: 24, artist: "Harry Styles", title: "As It Was", videoId: "H5v3kku4y6Q", start: 92, end: 115 },
+        { id: 25, artist: "Justin Timberlake", title: "Cry Me a River", videoId: "DksSPZTZES0", start: 207, end: 225 },
+        { id: 26, artist: "Taylor Swift", title: "The Fate of Ophelia", videoId: "ko70cExuzZM", start: 72, end: 92 },
+        { id: 27, artist: "Жанна Фриске", title: "Портофино", videoId: "UuxN2TBORBs", start: 197, end: 220 },
+        { id: 28, artist: "Ляпис Трубецкой", title: "В платье белом", videoId: "DEaMKXqZj4I", start: 173, end: 194 },
+        { id: 29, artist: "PinkPantheress", title: "Illegal", videoId: "TFWXqLSr4ZM", start: 0, end: 13 },
+        { id: 30, artist: "ABBA", title: "Dancing Queen", videoId: "xFrGuyw1V8s", start: 178, end: 198 },
+        { id: 31, artist: "Serebro", title: "Мало тебя", videoId: "KqJsZ1_1-F0", start: 188, end: 202 },
+        { id: 32, artist: "Катя Лель", title: "Муси-пуси", videoId: "OxGMSJ2VBhg", start: 222, end: 237 },
+        { id: 33, artist: "Justin Bieber", title: "Baby", videoId: "j8n1pj8RfFs", start: 44, end: 58 },
+        { id: 34, artist: "The Weeknd", title: "Blinding Lights", videoId: "4NRXx6U8ABQ", start: 81, end: 94 },
+        { id: 35, artist: "Элджей & Feduk", title: "Розовое вино", videoId: "wOBnq0Ewz5k", start: 110, end: 126 },
+        { id: 36, artist: "Ирина Аллегрова", title: "Угонщица", videoId: "XoRLyNy-ad8", start: 130, end: 144 },
+        { id: 37, artist: "ROSÉ & Bruno Mars", title: "APT.", videoId: "ekr2nIex040", start: 71, end: 90 },
+        { id: 38, artist: "Tame Impala", title: "Dracula", videoId: "xnP7qKxwzjg", start: 145, end: 165 }
+    ];
+
+    // Глобальные переменные состояния
+    let shuffledQueue = [];
+    let currentIndex = 0;
+    let isPlaying = false;
+    let isRevealed = false;
+    let historyArray = [];
+    let player;
+    let checkTimeInterval;
+
+    // Элементы DOM
+    const screenWelcome = document.getElementById('screen-welcome');
+    const screenPlaying = document.getElementById('screen-playing');
+    const screenFinished = document.getElementById('screen-finished');
+
+    const btnOpenHistory = document.getElementById('btn-open-history');
+    const drawerHistory = document.getElementById('drawer-history');
+
+    const vinylDisc = document.getElementById('vinyl-disc');
+    const vinylContainer = document.getElementById('vinyl-container');
+    const answerContainer = document.getElementById('answer-container');
+
+    const btnPlayPause = document.getElementById('btn-play-pause');
+    const iconPlayPause = document.getElementById('icon-play-pause');
+    const textPlayPause = document.getElementById('text-play-pause');
+    const btnReveal = document.getElementById('btn-reveal');
+
+    // Инициализация YouTube API
+    window.onYouTubeIframeAPIReady = function() {
+        player = new YT.Player('youtube-player', {
+            height: '200',
+            width: '200',
+            playerVars: {
+                'playsinline': 1,
+                'controls': 0,
+                'disablekb': 1
+            },
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    };
+
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.PLAYING) {
+            setPlayingState(true);
+        } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+            setPlayingState(false);
+        }
+    }
+
+    // Вспомогательная функция перемешивания
+    function shuffleArray(array) {
+        const arr = [...array];
+        for (let i = arr.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        return arr;
+    }
+
+    // Логика UI
+    function showScreen(screen) {
+        screenWelcome.classList.add('hidden');
+        screenPlaying.classList.add('hidden');
+        screenFinished.classList.add('hidden');
+        screen.classList.remove('hidden');
+    }
+
+    function setPlayingState(playing) {
+        isPlaying = playing;
+        if (isPlaying) {
+            // Изменение кнопки на Паузу
+            btnPlayPause.classList.remove('bg-barbie-500', 'hover:bg-barbie-600', 'glow-pink');
+            btnPlayPause.classList.add('bg-amber-500', 'hover:bg-amber-600');
+            iconPlayPause.classList.replace('fa-play', 'fa-pause');
+            textPlayPause.innerText = 'Пауза';
+
+            // Анимация пластинки
+            vinylDisc.classList.add('animate-spin-slow', 'glow-pink');
+            document.getElementById('status-playing').classList.remove('hidden');
+            document.getElementById('status-paused').classList.add('hidden');
+
+            // Проверка времени
+            startTrackingTime();
+        } else {
+            // Изменение кнопки на Play
+            btnPlayPause.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+            btnPlayPause.classList.add('bg-barbie-500', 'hover:bg-barbie-600', 'glow-pink');
+            iconPlayPause.classList.replace('fa-pause', 'fa-play');
+            textPlayPause.innerText = 'Воспроизвести';
+
+            // Остановка пластинки
+            vinylDisc.classList.remove('animate-spin-slow', 'glow-pink');
+            document.getElementById('status-playing').classList.add('hidden');
+            document.getElementById('status-paused').classList.remove('hidden');
+
+            clearInterval(checkTimeInterval);
+        }
+    }
+
+    function startTrackingTime() {
+        clearInterval(checkTimeInterval);
+        const currentTrack = shuffledQueue[currentIndex];
+        checkTimeInterval = setInterval(() => {
+            if (player && typeof player.getCurrentTime === 'function') {
+                if (player.getCurrentTime() >= currentTrack.end) {
+                    player.pauseVideo();
+                    setPlayingState(false);
+                }
+            }
+        }, 250);
+    }
+
+    function playCurrentSnippet() {
+        if (!player) return;
+        const currentTrack = shuffledQueue[currentIndex];
+        player.loadVideoById({
+            videoId: currentTrack.videoId,
+            startSeconds: currentTrack.start,
+            endSeconds: currentTrack.end
+        });
+        player.playVideo();
+    }
+
+    // Действия кнопок
+    document.getElementById('btn-start').addEventListener('click', () => {
+        shuffledQueue = shuffleArray(TRACKS_DATA);
+        currentIndex = 0;
+        historyArray = [];
+
+        document.getElementById('history-count').innerText = '0';
+        btnOpenHistory.classList.remove('hidden');
+        btnOpenHistory.classList.add('flex');
+
+        updateTrackUI();
+        showScreen(screenPlaying);
+    });
+
+    document.getElementById('btn-restart').addEventListener('click', () => {
+        document.getElementById('btn-start').click();
+    });
+
+    document.getElementById('btn-play-pause').addEventListener('click', () => {
+        if (isPlaying) {
+            player.pauseVideo();
+        } else {
+            playCurrentSnippet();
+        }
+    });
+
+    document.getElementById('btn-repeat').addEventListener('click', () => {
+        playCurrentSnippet();
+    });
+
+    document.getElementById('btn-reveal').addEventListener('click', () => {
+        if (isRevealed) return;
+
+        isRevealed = true;
+        const currentTrack = shuffledQueue[currentIndex];
+
+        // Добавляем в историю
+        historyArray.push({ round: currentIndex + 1, track: currentTrack });
+        document.getElementById('history-count').innerText = historyArray.length;
+        renderHistoryList();
+
+        // Показываем карточку ответа
+        vinylContainer.classList.add('hidden');
+        answerContainer.classList.remove('hidden');
+        document.getElementById('answer-artist').innerText = currentTrack.artist;
+        document.getElementById('answer-title').innerText = `«${currentTrack.title}»`;
+
+        // Деактивируем кнопку ответа
+        btnReveal.classList.remove('bg-gold', 'hover:bg-yellow-400', 'text-slate-900', 'glow-gold');
+        btnReveal.classList.add('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
+    });
+
+    document.getElementById('btn-next').addEventListener('click', () => {
+        if (isPlaying && player) {
+            player.pauseVideo();
+        }
+
+        if (currentIndex + 1 < shuffledQueue.length) {
+            currentIndex++;
+            updateTrackUI();
+        } else {
+            showScreen(screenFinished);
+            btnOpenHistory.classList.add('hidden');
+            btnOpenHistory.classList.remove('flex');
+        }
+    });
+
+    function updateTrackUI() {
+        isRevealed = false;
+        setPlayingState(false);
+
+        document.getElementById('track-number').innerText = `Песня № ${currentIndex + 1}`;
+        document.getElementById('tracks-left').innerText = `Осталось: ${shuffledQueue.length - currentIndex - 1}`;
+
+        vinylContainer.classList.remove('hidden');
+        answerContainer.classList.add('hidden');
+
+        btnReveal.classList.add('bg-gold', 'hover:bg-yellow-400', 'text-slate-900', 'glow-gold');
+        btnReveal.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
+    }
+
+    // Логика Боковой панели (Истории)
+    btnOpenHistory.addEventListener('click', () => drawerHistory.classList.remove('hidden'));
+    document.getElementById('btn-close-history').addEventListener('click', () => drawerHistory.classList.add('hidden'));
+    document.getElementById('btn-close-history-bottom').addEventListener('click', () => drawerHistory.classList.add('hidden'));
+
+    function renderHistoryList() {
+        const emptyState = document.getElementById('history-empty');
+        const list = document.getElementById('history-list');
+
+        if (historyArray.length === 0) {
+            emptyState.classList.remove('hidden');
+            list.classList.add('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+            list.classList.remove('hidden');
+
+            list.innerHTML = '';
+            historyArray.forEach(item => {
+                list.innerHTML += `
+                        <div class="p-4 rounded-xl bg-barbie-50 border border-barbie-200 flex items-center space-x-4 shadow-sm">
+                            <span class="w-8 h-8 rounded-full bg-barbie-500 text-white font-bold text-sm flex items-center justify-center flex-shrink-0">
+                                ${item.round}
+                            </span>
+                            <div class="text-left overflow-hidden">
+                                <h4 class="font-bold text-slate-800 text-base truncate">
+                                    ${item.track.artist}
+                                </h4>
+                                <p class="text-sm text-barbie-700 font-medium truncate">
+                                    «${item.track.title}»
+                                </p>
+                            </div>
+                        </div>
+                    `;
+            });
+        }
+    }
+</script>
+</body>
+</html>
