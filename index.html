@@ -76,7 +76,7 @@
         .hidden { display: none !important; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-barbie-100 via-barbie-200 to-barbie-300 min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white">
+<body id="bg-body" class="bg-gradient-to-br from-barbie-100 via-barbie-200 to-purple-300 min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white transition-all duration-700">
 
     <!-- YouTube Плеер (скрыт) -->
     <div id="youtube-player-container" class="fixed -top-[9999px] -left-[9999px] pointer-events-none opacity-0">
@@ -88,7 +88,7 @@
         
         <!-- Фоновые декорации -->
         <div class="absolute -top-20 -left-20 w-80 h-80 bg-barbie-300 rounded-full blur-3xl opacity-50 pointer-events-none animate-pulse-slow"></div>
-        <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-barbie-400 rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse-slow"></div>
+        <div class="absolute -bottom-20 -right-20 w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-40 pointer-events-none animate-pulse-slow"></div>
 
         <!-- Шапка -->
         <header class="w-full max-w-5xl flex items-center justify-between z-10 py-2 border-b-2 border-barbie-300/40">
@@ -207,19 +207,19 @@
                 </div>
             </div>
 
-            <!-- Обновленные Кнопки управления (3 кнопки вместо 4) -->
+            <!-- Кнопки управления -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mt-8 pt-6 border-t border-barbie-200">
                 <button id="btn-play-pause" class="bg-barbie-500 hover:bg-barbie-600 text-white shadow-md glow-pink p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-barbie-500 disabled:shadow-none">
                     <i id="icon-play-pause" class="fa-solid fa-play text-xl"></i>
                     <span id="text-play-pause">Воспроизвести</span>
                 </button>
 
-                <button id="btn-reveal" class="bg-gold hover:bg-yellow-400 text-slate-900 shadow-md glow-gold p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition">
+                <button id="btn-reveal" class="bg-gold hover:bg-yellow-400 text-slate-900 shadow-md glow-gold p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-gold disabled:shadow-none">
                     <i class="fa-solid fa-eye text-xl"></i>
                     <span>Показать ответ</span>
                 </button>
 
-                <button id="btn-next" class="bg-slate-800 hover:bg-slate-900 text-white p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 shadow-md transition">
+                <button id="btn-next" class="bg-slate-800 hover:bg-slate-900 text-white p-4 rounded-2xl font-bold text-sm md:text-base flex flex-col items-center justify-center space-y-1 shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-slate-800 disabled:shadow-none">
                     <i class="fa-solid fa-forward-step text-xl"></i>
                     <span>Далее</span>
                 </button>
@@ -320,10 +320,19 @@
             { id: 38, artist: "Tame Impala", title: "Dracula", videoId: "xnP7qKxwzjg", start: 145, end: 165 }
         ];
 
+        const GRADIENTS = [
+            "bg-gradient-to-br from-barbie-100 via-barbie-200 to-purple-300",
+            "bg-gradient-to-tr from-purple-200 via-barbie-200 to-pink-300",
+            "bg-gradient-to-r from-fuchsia-100 via-pink-200 to-barbie-200",
+            "bg-gradient-to-bl from-barbie-200 via-purple-300 to-pink-100",
+            "bg-gradient-to-l from-pink-200 via-fuchsia-200 to-purple-200"
+        ];
+
         let shuffledQueue = [];
         let currentIndex = 0;
         let isPlaying = false;
         let isRevealed = false;
+        let hasPlayedAtLeastOnce = false;
         let historyArray = [];
         let player = null;
         let checkTimeInterval = null;
@@ -343,8 +352,9 @@
         const iconPlayPause = document.getElementById('icon-play-pause');
         const textPlayPause = document.getElementById('text-play-pause');
         const btnReveal = document.getElementById('btn-reveal');
+        const btnNext = document.getElementById('btn-next');
+        const bgBody = document.getElementById('bg-body');
 
-        // Гарантированная инициализация плеера даже при кешировании
         function initYouTubePlayer() {
             if (player) return;
             player = new YT.Player('youtube-player', {
@@ -396,6 +406,7 @@
         function setPlayingState(playing) {
             isPlaying = playing;
             if (isPlaying) {
+                hasPlayedAtLeastOnce = true;
                 btnPlayPause.disabled = true;
                 textPlayPause.innerText = 'Воспроизводится...';
                 
@@ -408,6 +419,12 @@
                 btnPlayPause.disabled = false;
                 textPlayPause.innerText = 'Воспроизвести';
                 
+                // Разблокируем Показать ответ и Далее только если трек был запущен хотя бы 1 раз
+                if (hasPlayedAtLeastOnce) {
+                    if (!isRevealed) btnReveal.disabled = false;
+                    btnNext.disabled = false;
+                }
+
                 vinylDisc.classList.remove('animate-spin-slow', 'glow-pink');
                 document.getElementById('status-playing').classList.add('hidden');
                 document.getElementById('status-paused').classList.remove('hidden');
@@ -440,6 +457,11 @@
             player.playVideo();
         }
 
+        function changeBackgroundGradient() {
+            const gradientIndex = currentIndex % GRADIENTS.length;
+            bgBody.className = `${GRADIENTS[gradientIndex]} min-h-screen text-slate-800 font-sans selection:bg-barbie-400 selection:text-white transition-all duration-700`;
+        }
+
         document.getElementById('btn-start').addEventListener('click', () => {
             shuffledQueue = shuffleArray(TRACKS_DATA);
             currentIndex = 0;
@@ -469,7 +491,6 @@
             isRevealed = true;
             const currentTrack = shuffledQueue[currentIndex];
             
-            // Если песню еще не открывали, добавляем в историю
             addToHistory(currentTrack);
 
             vinylContainer.classList.add('hidden');
@@ -477,18 +498,21 @@
             document.getElementById('answer-artist').innerText = currentTrack.artist;
             document.getElementById('answer-title').innerText = `«${currentTrack.title}»`;
 
-            btnReveal.classList.remove('bg-gold', 'hover:bg-yellow-400', 'text-slate-900', 'glow-gold');
-            btnReveal.classList.add('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
+            btnReveal.disabled = true;
         });
 
-        document.getElementById('btn-next').addEventListener('click', () => {
+        btnNext.addEventListener('click', () => {
+            btnNext.disabled = true;
+            setTimeout(() => {
+                if (hasPlayedAtLeastOnce) btnNext.disabled = false;
+            }, 1000);
+
             if (isPlaying && player) {
                 player.pauseVideo();
             }
 
             const currentTrack = shuffledQueue[currentIndex];
             
-            // Если нажали «Далее», не открывая ответ, всё равно сохраняем песню в историю
             if (!isRevealed) {
                 addToHistory(currentTrack);
             }
@@ -514,16 +538,19 @@
 
         function updateTrackUI() {
             isRevealed = false;
+            hasPlayedAtLeastOnce = false;
             setPlayingState(false);
+            changeBackgroundGradient();
             
+            // Изначально задизейблены все кнопки, кроме "Воспроизвести"
+            btnReveal.disabled = true;
+            btnNext.disabled = true;
+
             document.getElementById('track-number').innerText = `Песня № ${currentIndex + 1}`;
             document.getElementById('tracks-left').innerText = `Осталось: ${shuffledQueue.length - currentIndex - 1}`;
             
             vinylContainer.classList.remove('hidden');
             answerContainer.classList.add('hidden');
-            
-            btnReveal.classList.add('bg-gold', 'hover:bg-yellow-400', 'text-slate-900', 'glow-gold');
-            btnReveal.classList.remove('bg-slate-200', 'text-slate-400', 'cursor-not-allowed');
         }
 
         btnOpenHistory.addEventListener('click', () => drawerHistory.classList.remove('hidden'));
